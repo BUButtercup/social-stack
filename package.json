@@ -1,0 +1,25 @@
+{
+  "name": "social-stack",
+  "version": "1.0.0",
+  "description": "This application will use MongoDB and Mongoose to mimic the back-end of a simple social networking app.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BUButtercup/social-stack.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BUButtercup/social-stack/issues"
+  },
+  "homepage": "https://github.com/BUButtercup/social-stack#readme",
+  "dependencies": {
+    "express": "^4.17.3",
+    "mongodb": "^4.4.0",
+    "mongoose": "^6.2.3"
+  }
+}
