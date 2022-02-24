@@ -8,7 +8,8 @@ router.get('/', (req, res)=>{
             res.status(500).json({message: err})
         }
         if(result){
-            res.status(200).json(result);
+            res.status(200).json(result)
+            
         } 
     }).populate('friends')
     .populate('thoughts')
@@ -19,6 +20,9 @@ router.get('/:userId', (req, res)=>{
     User.findOne({_id: req.params.userId}, (err, result) =>{
         if(err){
             res.status(500).json({message: `There was an error!!${err}`})
+        }
+        if(!result){
+            res.status(404).json({message: `There was no user with id ${req.params.id}`})
         }
         if(result){
             res.status(200).json(result);
@@ -55,22 +59,37 @@ router.put('/edit/:id', (req, res)=>{
         email: req.body.email
         },
         //send back new
-        {new: true},
+        {runValidators: true, new: true},
         (err, response)=>{
             if(err){
                 console.log(`Uhoh! There was an error: ${err}`)
                 res.status(500).json(err);
             }
+            if(!response){
+                res.status(400).json({message: `Found no user with ID# ${req.params.id}.`})
+            }
             if(response){
-                console.log(`User was updated!`)
-                res.status(200).json(response)
-                res.status(200).json(response)
-                .populate('friends')
-                .populate('thoughts')
-                .select('-__v');
+                if((req.body.username)&&(response.thoughts.length>0)){
+                    response.thoughts.forEach(thought=>{
+                        Thought.findOneAndUpdate(
+                            //where
+                            {_id: thought._id},
+                            //new value
+                            {username: User.username},
+                            //send back new
+                            {new: true})
+                    })
+                    console.log(`User and thought(s) was updated!`)
+                    res.status(200).json(response)
+                }else{
+                    console.log(`User was updated!`)
+                    res.status(200).json(response)
+                }
             }
         }
-    )
+    ).populate('friends')
+    .populate('thoughts')
+    .select('-__v');
 })
 
 
