@@ -12,10 +12,17 @@ const userSchema = new Schema(
     },
     email: {
         type: String,
+        validate: {
+            validator: v => {
+                return /^([a-zA-Z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/.test(v)
+            },
+
+        },
         required: [true, 'Email is required!'],
         unique: true,
-    }
-    comments: [{ type: Schema.Types.ObjectId, ref: 'comment' }],
+    },
+    thoughts: [{ type: Schema.Types.ObjectId, ref: 'thought' }],
+    friends: [{type: Schema.Types.ObjectId, ref: 'user' }]
   },
   {
     toJSON: {
@@ -32,12 +39,12 @@ const userSchema = new Schema(
 
 const User = model('user', userSchema);
 
-User.on('index', function(err) { // <-- Wait for model's indexes to finish
-    assert.ifError(err);
-    User.create([{ username: 'Val' }, { username: 'Val' }], function(err) {
-      console.log(err);
-    });
-  });
+// User.on('index', function(err) { // <-- Wait for model's indexes to finish
+//     if(err){throw err};
+//     User.create([{ username: 'Val' }, { username: 'Val' }], function(err) {
+//       console.log(err);
+//     });
+//   });
 
 // Create a virtual property `commentCount` that gets the amount of comments per post
 // postSchema.virtual('commentCount').get(function () {

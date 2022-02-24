@@ -4,16 +4,31 @@ const reactionSchema = new Schema({
     reactionBody: {
         type: String,
         required: [true, 'You have to write something!'],
-        max: 280,
+        maxlength: 280,
+    },
+    username: {
+        type: String,
+        required: [true, 'Please enter your username.'],
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now 
     }
 })
 
 // Schema to create Post model
 const thoughtSchema = new Schema(
   {
-    text: String,
-    username: [{ type: Schema.Types.ObjectId, ref: 'user' }],
-    reactions: [{ type: Schema.Types.ObjectId, ref: 'reaction' }],
+    thoughtText: String,
+    createdAt: {
+        type: Date,
+        default: Date.now 
+    },
+    username: {
+        type: String,
+        required: [true, 'Please enter your username.']
+    },
+    reactions: [reactionSchema],
   },
   {
     toJSON: {
@@ -28,7 +43,7 @@ thoughtSchema.virtual('reactionsCount').get(function () {
   return this.reactions.length;
 });
 
-// Initialize our Post model
+// Initialize our Thought model
 const Thought = model('thought', thoughtSchema);
 
 module.exports = Thought;
