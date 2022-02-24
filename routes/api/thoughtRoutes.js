@@ -38,9 +38,9 @@ router.post('/new/:userId', async (req, res)=>{
     // username
     // userId
     try{
-        const response = await Thought.create(req.body, async (err, result)=>{
+        const response = await Thought.create(req.body)
             if(response){
-                const resp = await User.findOneAndUpdate(
+                const resp = User.findOneAndUpdate(
                     //where
                     {_id: req.params.userId},
                     //new value
@@ -55,10 +55,33 @@ router.post('/new/:userId', async (req, res)=>{
                     res.status(404).json({message: `No user with ID# ${req.params.userId} found.`})
                 } 
             }
-        });
     } catch (err) {
         res.status(500).json(err);
     }
+})
+
+router.post('/:id/reactions', (req, res)=>{
+    Thought.findOneAndUpdate(
+        //where
+        {_id: req.params.id},
+        //new value: reactionBody & username
+        {$addToSet: {reactions: req.body}},
+        //send back new
+        {new: true},
+        (err, response)=>{
+            if(err){
+                console.log(`Uhoh! There was an error: ${err}`)
+                res.status(500).json(err);
+            }
+            if(!response){
+                res.status(404).json({message:`A thought with ID# ${req.params.id} could not be found.`})
+            }
+            if(response){
+                console.log(`Reaction was added!`)
+                res.status(200).json(response)
+            }
+        }
+    )
 })
 
 //edit a thought by id
@@ -85,6 +108,8 @@ router.put('/edit/:id', (req, res)=>{
     .select('-__v');
 })
 
+
+//delete a thought
 router.delete('/delete/:id', (req, res)=>{
     Thought.findOneAndDelete({_id: req.params.id}, (err, result)=>{
         if(err){
@@ -97,12 +122,36 @@ router.delete('/delete/:id', (req, res)=>{
                 {thoughts: req.params.id},
                 {$pull: {thoughts: req.params.id}},
                 {new: true})
-            console.log(`User #${req.params.id} and their associated thoughts were deleted.`);
+            console.log(`Thought #${req.params.id} was deleted.`);
             res.status(200).json(result);
         } else {
-            res.status(404).json({message:`No used with id#${req.params.id} found!`})
+            res.status(404).json({message:`No thought with id#${req.params.id} found!`})
         }
     })
+})
+
+router.delete('/:id/reactions/:reactionId', (req, res)=>{
+    Thought.findOneAndUpdate(
+        //where
+        {_id: req.params.id},
+        //pulling out the reaction from the array
+        {$pull: {reactions: {_id: req.params.reactionId}}},
+        //send back new
+        {new: true},
+        (err, response)=>{
+            if(err){
+                console.log(`Uhoh! There was an error: ${err}`)
+                res.status(500).json(err);
+            }
+            if(!response){
+                res.status(404).json({message:`A thought with ID# ${req.params.id} could not be found.`})
+            }
+            if(response){
+                console.log(`Reaction was deleted!`)
+                res.status(200).json(response)
+            }
+        }
+    )
 })
 
 module.exports = router;

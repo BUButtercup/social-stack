@@ -109,13 +109,12 @@ router.put('/:id/friends/:friendId', (req, res)=>{
             if(response){
                 console.log(`User was updated!`)
                 res.status(200).json(response)
-                res.status(200).json(response)
-                .populate('friends')
-                .populate('thoughts')
-                .select('-__v');
+               
             }
         }
-    )
+    ) .populate('friends')
+    .populate('thoughts')
+    .select('-__v');
 })
 
 
@@ -134,7 +133,7 @@ router.delete('/delete/:id', (req, res)=>{
             console.log(`User #${req.params.id} and their associated thoughts were deleted.`);
             res.status(200).json(result);
         } else {
-            res.status(404).json({message:`No used with id#${req.params.id} found!`})
+            res.status(404).json({message:`No user with id#${req.params.id} found!`})
         }
     })
 })
