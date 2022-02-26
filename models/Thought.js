@@ -19,10 +19,13 @@ const reactionSchema = new Schema({
 // Schema to create Post model
 const thoughtSchema = new Schema(
   {
-    thoughtText: String,
+    thoughtText: {
+      type: String,
+      required: [true, 'Please share the thought.']
+    },
     createdAt: {
         type: Date,
-        default: Date.now 
+        default: Date.now,
     },
     username: {
         type: String,
